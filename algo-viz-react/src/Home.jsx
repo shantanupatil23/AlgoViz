@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "./Home.css";
 
 function Home() {
-  const algos = [{ id: crypto.randomUUID, title: "	Minimum Path Sum" }];
+  const algos = [{ id: crypto.randomUUID, title: "Minimum Path Sum" }];
 
   return (
     <>

@@ -2,7 +2,7 @@
 export default function VisualizeBlock(props) {
   return (
     <>
-      <h1>Minimum Path Sum</h1>
+      <h1>{props.title}</h1>
       <div className="viz-section">{props.visualizeSection}</div>
       <button
         onClick={() => props.runAlgorithm()}
@@ -11,6 +11,9 @@ export default function VisualizeBlock(props) {
       >
         Click to start
       </button>
+      <a href={props.url} target="_blank" rel="noreferrer">
+        <p className="read-the-docs">{props.question}</p>
+      </a>
     </>
   );
 }

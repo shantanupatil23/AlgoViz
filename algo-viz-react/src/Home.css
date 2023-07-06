@@ -38,8 +38,12 @@
   display: inline;
 }
 
-.algo-button{
+.algo-button {
   margin-inline: 1em;
+}
+
+.card .algo-button {
+  width: 20em;
 }
 
 .read-the-docs {

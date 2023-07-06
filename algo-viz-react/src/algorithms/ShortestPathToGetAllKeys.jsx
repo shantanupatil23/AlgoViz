@@ -217,9 +217,9 @@ export default function ShortestPathToGetAllKeys() {
 
   return (
     <VisualizeBlock
+      title="Shortest Path to Get All Keys"
       matrix={matrix}
       resultMatrix={resultMatrix}
-      runAlgorithm={runAlgorithm}
       visualizeSection={
         <>
           {[
@@ -250,6 +250,9 @@ export default function ShortestPathToGetAllKeys() {
           })}
         </>
       }
+      runAlgorithm={runAlgorithm}
+      url="https://leetcode.com/problems/shortest-path-to-get-all-keys/"
+      question="864. Shortest Path to Get All Keys (LeetCode)"
     />
   );
 }

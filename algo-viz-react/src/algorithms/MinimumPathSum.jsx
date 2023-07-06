@@ -52,10 +52,10 @@ export default function MinimumPathSum() {
     const current_pointer_value = matrix[i][j].value;
 
     updateMatrix(i, j, Grid.current, current_pointer_value);
-    await sleep(200);
+    await sleep(100);
 
     if (i === matrix.length - 1 && j === matrix[0].length - 1) {
-      await sleep(500);
+      await sleep(200);
       min_sum = Math.min(min_sum ?? count_debug, count_debug);
       updateMatrix(i, j, Grid.notVisited, current_pointer_value * -1, min_sum);
       return;
@@ -73,7 +73,7 @@ export default function MinimumPathSum() {
       updateMatrix(i, j, Grid.current);
     }
 
-    await sleep(200);
+    await sleep(100);
     updateMatrix(i, j, Grid.notVisited, current_pointer_value * -1);
     return;
   }
@@ -84,10 +84,10 @@ export default function MinimumPathSum() {
 
   return (
     <VisualizeBlock
+      title="Minimum Path Sum"
       matrix={matrix}
       count={count}
       minCount={minCount}
-      runAlgorithm={runAlgorithm}
       visualizeSection={
         <>
           <div className="viz-div">
@@ -119,6 +119,9 @@ export default function MinimumPathSum() {
           </div>
         </>
       }
+      runAlgorithm={runAlgorithm}
+      url="https://leetcode.com/problems/minimum-path-sum/"
+      question="64. Minimum Path Sum (LeetCode)"
     />
   );
 }

@@ -3,6 +3,7 @@ import Home from "./Home";
 import NoPage from "./NoPage";
 import MinimumPathSum from "./algorithms/MinimumPathSum";
 import ShortestPathToGetAllKeys from "./algorithms/ShortestPathToGetAllKeys";
+import UniquePaths from "./algorithms/UniquePaths";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           path="shortest-path-keys"
           element={<ShortestPathToGetAllKeys />}
         />
+        <Route path="unique-paths" element={<UniquePaths />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </BrowserRouter>

@@ -15,6 +15,11 @@ function Home() {
       title: "Minimum Path Sum",
       endpoint: "min-path-sum",
     },
+    {
+      id: crypto.randomUUID(),
+      title: "Unique Paths III",
+      endpoint: "unique-paths",
+    },
   ];
 
   return (
@@ -37,7 +42,9 @@ function Home() {
           );
         })}
       </div>
-      <p className="read-the-docs">Click on the any Algorithm to proceed.</p>
+      <p className="read-the-docs">
+        Choose an algorithm for visualization from the available options.
+      </p>
     </>
   );
 }

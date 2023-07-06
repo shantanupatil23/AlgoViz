@@ -1,13 +1,8 @@
 import { useState } from "react";
+import VisualizeBlock from "./VisualizeBlock";
+import { Grid } from "../constants";
 
 export default function ShortestPathToGetAllKeys() {
-  const Grid = {
-    notVisited: "viz-block-not-visited",
-    visited: "viz-block-visited",
-    current: "viz-block-current",
-    wall: "viz-block-wall",
-  };
-
   const grid = ["@..aA", "..B#.", "....b"];
 
   const [matrix, setMatrix] = useState(
@@ -48,7 +43,7 @@ export default function ShortestPathToGetAllKeys() {
     })
   );
 
-  let nkeys = 0;
+  let total_keys = 0;
 
   let path = [];
 
@@ -64,158 +59,137 @@ export default function ShortestPathToGetAllKeys() {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  async function traverse(grid, i, j) {
-    if (grid[i][j] === "#") {
-      return;
-    }
+  async function traverse(i, j) {
+    if (grid[i][j] === "#") return;
 
-    let matrix_copy = [...matrix];
+    const current_matrix = [...matrix];
+
     if (path.length > 0) {
-      const prev_path = path.slice(-1);
-      matrix_copy[prev_path[0][0]][prev_path[0][1]].status = Grid.visited;
+      const [dx, dy] = path[path.length - 1];
+      current_matrix[dx][dy].status = Grid.visited;
     }
-    matrix_copy[i][j].status = Grid.current;
-    setMatrix(matrix_copy);
+    current_matrix[i][j].status = Grid.current;
+    setMatrix(current_matrix);
     await sleep(100);
 
     path.push([i, j]);
 
-    if (grid[i][j] !== "@" && grid[i][j] !== "#" && grid[i][j] !== ".") {
-      if (grid[i][j] === grid[i][j].toLowerCase()) {
+    const currentChar = grid[i][j];
+    if (!["@", "#", "."].includes(currentChar)) {
+      if (currentChar === currentChar.toLowerCase()) {
         if (
           !key_fetched_value.includes(grid[i][j]) &&
           !key_found_in_paths.includes(path)
         ) {
-          key_found_in_paths.push(JSON.parse(JSON.stringify(path)));
+          key_found_in_paths.push(...path);
           key_fetched_ptr.push(path.length - 1);
           key_fetched_value.push(grid[i][j]);
           key_fetched_index.push([i, j]);
-          if (key_fetched_value.length === nkeys) {
-            if (min_path !== null) {
-              if (min_path > path.length) {
-                min_path = path.length;
-                setResultMatrix(JSON.parse(JSON.stringify(matrix)));
-              }
-            } else {
-              min_path = path.length;
-              setResultMatrix(JSON.parse(JSON.stringify(matrix)));
-            }
+          if (
+            key_fetched_value.length === total_keys &&
+            (min_path === null || min_path > path.length)
+          ) {
+            min_path = path.length;
+            setResultMatrix(JSON.parse(JSON.stringify(matrix)));
           }
+
           if (
             grid[0].length != j + 1 &&
             !path
               .slice(key_fetched_ptr[-1])
-              .some((subarray) => subarray[0] === i && subarray[1] === j + 1)
+              .some(([dx, dy]) => dx === i && dy === j + 1)
           ) {
-            await traverse(grid, i, j + 1);
+            await traverse(i, j + 1);
           }
           if (
             grid.length != i + 1 &&
             !path
               .slice(key_fetched_ptr[-1])
-              .some((subarray) => subarray[0] === i + 1 && subarray[1] === j)
+              .some(([dx, dy]) => dx === i + 1 && dy === j)
           ) {
-            await traverse(grid, i + 1, j);
+            await traverse(i + 1, j);
           }
           if (
             j != 0 &&
             !path
               .slice(key_fetched_ptr[-1])
-              .some((subarray) => subarray[0] === i && subarray[1] === j - 1)
+              .some(([dx, dy]) => dx === i && dy === j - 1)
           ) {
-            await traverse(grid, i, j - 1);
+            await traverse(i, j - 1);
           }
           if (
             i != 0 &&
             !path
               .slice(key_fetched_ptr[-1])
-              .some((subarray) => subarray[0] === i - 1 && subarray[1] === j)
+              .some(([dx, dy]) => dx === i - 1 && dy === j)
           ) {
-            await traverse(grid, i - 1, j);
+            await traverse(i - 1, j);
           }
         }
       } else {
         const temp = grid[i][j].toLowerCase();
         if (!key_fetched_value.includes(temp)) {
           path.pop();
-          let temp = path.slice(-1);
-          temp = temp[0];
-          let matrix_copy = [...matrix];
-          matrix_copy[temp[0]][temp[1]].status = Grid.current;
-          matrix_copy[i][j].status = Grid.notVisited;
-          setMatrix(matrix_copy);
+          const [dx, dy] = path[path.length - 1];
+          current_matrix[dx][dy].status = Grid.current;
+          current_matrix[i][j].status = Grid.notVisited;
+          setMatrix(current_matrix);
           await sleep(100);
           return;
         }
       }
     }
+
     if (
       grid[0].length != j + 1 &&
       !path
         .slice(key_fetched_ptr[-1])
-        .some((subarray) => subarray[0] === i && subarray[1] === j + 1)
+        .some(([dx, dy]) => dx === i && dy === j + 1)
     ) {
-      await traverse(grid, i, j + 1);
+      await traverse(i, j + 1);
     }
     if (
       grid.length != i + 1 &&
       !path
         .slice(key_fetched_ptr[-1])
-        .some((subarray) => subarray[0] === i + 1 && subarray[1] === j)
+        .some(([dx, dy]) => dx === i + 1 && dy === j)
     ) {
-      await traverse(grid, i + 1, j);
+      await traverse(i + 1, j);
     }
     if (
       j != 0 &&
       !path
         .slice(key_fetched_ptr[-1])
-        .some((subarray) => subarray[0] === i && subarray[1] === j - 1)
+        .some(([dx, dy]) => dx === i && dy === j - 1)
     ) {
-      await traverse(grid, i, j - 1);
+      await traverse(i, j - 1);
     }
     if (
       i != 0 &&
       !path
         .slice(key_fetched_ptr[-1])
-        .some((subarray) => subarray[0] === i - 1 && subarray[1] === j)
+        .some(([dx, dy]) => dx === i - 1 && dy === j)
     ) {
-      await traverse(grid, i - 1, j);
+      await traverse(i - 1, j);
     }
 
-    let temp = path.slice(-1);
-    temp = temp[0];
+    const temp = path[path.length - 1];
+    const key_index = key_fetched_index.findIndex((item) => item === temp);
 
-    const counter = {};
-
-    path.forEach((ele) => {
-      if (counter[ele]) {
-        counter[ele] += 1;
-      } else {
-        counter[ele] = 1;
-      }
-    });
-    if (
-      counter[temp] === 1 &&
-      key_fetched_index.some(
-        (subarray) => subarray[0] === temp[0] && subarray[1] === temp[1]
-      )
-    ) {
-      key_fetched_index.splice(key_fetched_index.indexOf(temp), 1);
+    if (path.indexOf(temp) !== -1 && key_index !== -1) {
+      key_fetched_index.splice(key_index, 1);
       key_fetched_value.splice(grid[temp[0]][temp[1]], 1);
-      if (key_fetched_ptr.length === 1) {
-        key_fetched_ptr = [0];
-      } else {
-        key_fetched_ptr.pop();
-      }
+      key_fetched_ptr.length === 1
+        ? (key_fetched_ptr = [0])
+        : key_fetched_ptr.pop();
     }
+
     path.pop();
     if (path.length > 0) {
-      let temp = path.slice(-1);
-      temp = temp[0];
-      let matrix_copy = [...matrix];
-      matrix_copy[temp[0]][temp[1]].status = Grid.current;
-      matrix_copy[i][j].status = Grid.notVisited;
-      setMatrix(matrix_copy);
+      const temp = path[path.length - 1];
+      current_matrix[temp[0]][temp[1]].status = Grid.current;
+      current_matrix[i][j].status = Grid.notVisited;
+      setMatrix(current_matrix);
       await sleep(100);
     }
     return;
@@ -227,69 +201,55 @@ export default function ShortestPathToGetAllKeys() {
 
     for (let i = 0; i < grid.length; i++) {
       for (let j = 0; j < grid[0].split("").length; j++) {
-        if (grid[i][j] === "@") {
+        const cell = grid[i][j];
+        if (cell === "@") {
           si = i;
           sj = j;
-        }
-        if (
-          grid[i][j] !== "@" &&
-          grid[i][j] !== "#" &&
-          grid[i][j] !== "." &&
-          grid[i][j] === grid[i][j].toLowerCase()
-        ) {
-          nkeys += 1;
+        } else if (/[a-z]/.test(cell)) {
+          total_keys++;
         }
       }
     }
 
-    await traverse(grid, si, sj);
+    await traverse(si, sj);
     return;
   }
 
   return (
-    <>
-      <h1>Shortest Path to Get All Keys</h1>
-      <div className="viz-section">
-        <div className="viz-div">
-          {matrix.map((row) => {
+    <VisualizeBlock
+      matrix={matrix}
+      resultMatrix={resultMatrix}
+      runAlgorithm={runAlgorithm}
+      visualizeSection={
+        <>
+          {[
+            { id: crypto.randomUUID(), data: matrix, comment: "Input" },
+            { id: crypto.randomUUID(), data: resultMatrix, comment: "Output" },
+          ].map((item) => {
             return (
-              <div key={crypto.randomUUID()} className="viz-row">
-                {row.map((item) => {
+              <div key={item.id} className="viz-div">
+                {item.data.map((row) => {
                   return (
-                    <div key={item.id} className={`viz-block ${item.status}`}>
-                      {item.value}
+                    <div key={crypto.randomUUID()} className="viz-row">
+                      {row.map((item) => {
+                        return (
+                          <div
+                            key={item.id}
+                            className={`viz-block ${item.status}`}
+                          >
+                            {item.value}
+                          </div>
+                        );
+                      })}
                     </div>
                   );
                 })}
+                <p>{item.comment}</p>
               </div>
             );
           })}
-          <p>Input</p>
-        </div>
-        <div className="viz-div">
-          {resultMatrix.map((row) => {
-            return (
-              <div key={crypto.randomUUID()} className="viz-row">
-                {row.map((item) => {
-                  return (
-                    <div key={item.id} className={`viz-block ${item.status}`}>
-                      {item.value}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-          <p>Output</p>
-        </div>
-      </div>
-      <button
-        onClick={() => runAlgorithm()}
-        className="algo-button"
-        style={{ margin: "1em" }}
-      >
-        Click to start
-      </button>
-    </>
+        </>
+      }
+    />
   );
 }

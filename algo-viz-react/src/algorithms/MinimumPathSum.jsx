@@ -1,20 +1,17 @@
 import { useState } from "react";
 import "./algorithms.css";
+import VisualizeBlock from "./VisualizeBlock";
+import { Grid } from "../constants";
 
 export default function MinimumPathSum() {
-  const Grid = {
-    notVisited: "viz-block-not-visited",
-    visited: "viz-block-visited",
-    current: "viz-block-current",
-  };
-
-  const matrix_data = [
+  const grid = [
     [1, 3, 1],
     [1, 5, 1],
     [4, 2, 1],
   ];
+
   const [matrix, setMatrix] = useState(
-    matrix_data.map((row) => {
+    grid.map((row) => {
       return row.map((item) => {
         return {
           id: crypto.randomUUID(),
@@ -50,9 +47,8 @@ export default function MinimumPathSum() {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  async function runAlgorithm(pointer) {
-    const i = pointer[0];
-    const j = pointer[1];
+  async function traverse(pointer) {
+    const [i, j] = pointer;
     const current_pointer_value = matrix[i][j].value;
 
     updateMatrix(i, j, Grid.current, current_pointer_value);
@@ -60,20 +56,20 @@ export default function MinimumPathSum() {
 
     if (i === matrix.length - 1 && j === matrix[0].length - 1) {
       await sleep(500);
-      min_sum = min_sum != null ? Math.min(min_sum, count_debug) : count_debug;
+      min_sum = Math.min(min_sum ?? count_debug, count_debug);
       updateMatrix(i, j, Grid.notVisited, current_pointer_value * -1, min_sum);
       return;
     }
 
     if (j < matrix[0].length - 1) {
       updateMatrix(i, j, Grid.visited);
-      await runAlgorithm([i, j + 1]);
+      await traverse([i, j + 1]);
       updateMatrix(i, j, Grid.current);
     }
 
     if (i < matrix.length - 1) {
       updateMatrix(i, j, Grid.visited);
-      await runAlgorithm([i + 1, j]);
+      await traverse([i + 1, j]);
       updateMatrix(i, j, Grid.current);
     }
 
@@ -82,45 +78,47 @@ export default function MinimumPathSum() {
     return;
   }
 
+  function runAlgorithm() {
+    traverse([0, 0]);
+  }
+
   return (
-    <>
-      <h1>Minimum Path Sum</h1>
-      <div className="viz-section">
-        <div className="viz-div">
-          {matrix.map((row) => {
-            return (
-              <div key={crypto.randomUUID()} className="viz-row">
-                {row.map((item) => {
-                  return (
-                    <div key={item.id} className={`viz-block ${item.status}`}>
-                      {item.value}
-                    </div>
-                  );
-                })}
+    <VisualizeBlock
+      matrix={matrix}
+      count={count}
+      minCount={minCount}
+      runAlgorithm={runAlgorithm}
+      visualizeSection={
+        <>
+          <div className="viz-div">
+            {matrix.map((row) => {
+              return (
+                <div key={crypto.randomUUID()} className="viz-row">
+                  {row.map((item) => {
+                    return (
+                      <div key={item.id} className={`viz-block ${item.status}`}>
+                        {item.value}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+          <div>
+            <div className="viz-results">
+              <div className="viz-results-key">
+                Current Path Sum:&nbsp;&nbsp;{count}
               </div>
-            );
-          })}
-        </div>
-        <div>
-          <div className="viz-results">
-            <div className="viz-results-key">
-              Current Path Sum:&nbsp;&nbsp;{count}
+            </div>
+            <div className="viz-results">
+              <div className="viz-results-key">
+                Minimum Path Sum:&nbsp;&nbsp;{minCount}
+              </div>
             </div>
           </div>
-          <div className="viz-results">
-            <div className="viz-results-key">
-              Minimum Path Sum:&nbsp;&nbsp;{minCount}
-            </div>
-          </div>
-        </div>
-      </div>
-      <button
-        onClick={() => runAlgorithm([0, 0])}
-        className="algo-button"
-        style={{ margin: "1em" }}
-      >
-        Click to start
-      </button>
-    </>
+        </>
+      }
+    />
   );
 }

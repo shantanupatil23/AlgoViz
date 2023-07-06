@@ -3,6 +3,10 @@
   justify-content: space-evenly;
 }
 
+.viz-div {
+  margin-right: 1em;
+}
+
 .viz-row {
   display: flex;
 }

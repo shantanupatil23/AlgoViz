@@ -1,7 +1,7 @@
 import { useState } from "react";
-import "./visualize.css";
+import "./algorithms.css";
 
-export default function Visualize() {
+export default function MinimumPathSum() {
   const Grid = {
     notVisited: "viz-block-not-visited",
     visited: "viz-block-visited",
@@ -24,7 +24,7 @@ export default function Visualize() {
       });
     })
   );
-  const [count, setCount] = useState(matrix_data[0][0]);
+  const [count, setCount] = useState(0);
   const [minCount, setMinCount] = useState("NA");
 
   let count_debug = 0;
@@ -53,33 +53,32 @@ export default function Visualize() {
   async function runAlgorithm(pointer) {
     const i = pointer[0];
     const j = pointer[1];
+    const current_pointer_value = matrix[i][j].value;
 
-    updateMatrix(i, j, Grid.current);
-    await sleep(300);
+    updateMatrix(i, j, Grid.current, current_pointer_value);
+    await sleep(200);
 
     if (i === matrix.length - 1 && j === matrix[0].length - 1) {
       await sleep(500);
       min_sum = min_sum != null ? Math.min(min_sum, count_debug) : count_debug;
-      updateMatrix(i, j, Grid.notVisited, 0, min_sum);
+      updateMatrix(i, j, Grid.notVisited, current_pointer_value * -1, min_sum);
       return;
     }
 
     if (j < matrix[0].length - 1) {
-      const temp = matrix[i][j + 1].value;
-      updateMatrix(i, j, Grid.visited, temp);
+      updateMatrix(i, j, Grid.visited);
       await runAlgorithm([i, j + 1]);
-      updateMatrix(i, j, Grid.current, temp * -1);
+      updateMatrix(i, j, Grid.current);
     }
 
     if (i < matrix.length - 1) {
-      const temp = matrix[i + 1][j].value;
-      updateMatrix(i, j, Grid.visited, temp);
+      updateMatrix(i, j, Grid.visited);
       await runAlgorithm([i + 1, j]);
-      updateMatrix(i, j, Grid.current, temp * -1);
+      updateMatrix(i, j, Grid.current);
     }
 
     await sleep(200);
-    updateMatrix(i, j, Grid.notVisited);
+    updateMatrix(i, j, Grid.notVisited, current_pointer_value * -1);
     return;
   }
 

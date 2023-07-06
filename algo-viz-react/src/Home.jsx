@@ -4,7 +4,18 @@ import { Link } from "react-router-dom";
 import "./Home.css";
 
 function Home() {
-  const algos = [{ id: crypto.randomUUID, title: "Minimum Path Sum" }];
+  const algos = [
+    {
+      id: crypto.randomUUID(),
+      title: "Shortest Path to Get All Keys",
+      endpoint: "shortest-path-keys",
+    },
+    {
+      id: crypto.randomUUID(),
+      title: "Minimum Path Sum",
+      endpoint: "min-path-sum",
+    },
+  ];
 
   return (
     <>
@@ -16,11 +27,11 @@ function Home() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React</h1>
+      <h1>AlgoViz</h1>
       <div className="card">
         {algos.map((algo) => {
           return (
-            <Link key={algo.id} to="/visualize">
+            <Link key={algo.id} to={algo.endpoint}>
               <button className="algo-button">{algo.title}</button>
             </Link>
           );
